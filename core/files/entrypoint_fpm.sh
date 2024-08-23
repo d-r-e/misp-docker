@@ -12,14 +12,14 @@ change_php_vars() {
     for FILE in /etc/php/*/fpm/php.ini
     do
         [[ -e $FILE ]] || break
-        sed -i "s/memory_limit = .*/memory_limit = 2048M/" "$FILE"
-        sed -i "s/max_execution_time = .*/max_execution_time = 300/" "$FILE"
-        sed -i "s/upload_max_filesize = .*/upload_max_filesize = 50M/" "$FILE"
-        sed -i "s/post_max_size = .*/post_max_size = 50M/" "$FILE"
-        sed -i "s/session.save_handler = .*/session.save_handler = redis/" "$FILE"
-        sed -i "s|.*session.save_path = .*|session.save_path = '$(echo $REDIS_HOST | grep -E '^\w+://' || echo tcp://$REDIS_HOST):6379?auth=${REDIS_PASSWORD}'|" "$FILE"
-        sed -i "s/session.sid_length = .*/session.sid_length = 64/" "$FILE"
-        sed -i "s/session.use_strict_mode = .*/session.use_strict_mode = 1/" "$FILE"
+        sed -i "s/memory_limit = .*/memory_limit = ${PHP_FPM_MEMORY_LIMIT:-2048M}/" "$FILE"
+        sed -i "s/max_execution_time = .*/max_execution_time = ${PHP_FPM_MAX_EXECUTION_TIME:-300}/" "$FILE"
+        sed -i "s/upload_max_filesize = .*/upload_max_filesize = ${PHP_FPM_UPLOAD_MAX_FILESIZE:-50M}/" "$FILE"
+        sed -i "s/post_max_size = .*/post_max_size = ${PHP_FPM_POST_MAX_SIZE:-50M}/" "$FILE"
+        sed -i "s/session.save_handler = .*/session.save_handler = ${PHP_FPM_SESSION_SAVE_HANDLER:-redis}/" "$FILE"
+        sed -i "s|.*session.save_path = .*|session.save_path = '$(echo ${REDIS_HOST:-localhost} | grep -E '^\w+://' || echo tcp://${REDIS_HOST:-localhost}):6379?auth=${REDIS_PASSWORD:-default_password}'|" "$FILE"
+        sed -i "s/session.sid_length = .*/session.sid_length = ${PHP_FPM_SESSION_SID_LENGTH:-64}/" "$FILE"
+        sed -i "s/session.use_strict_mode = .*/session.use_strict_mode = ${PHP_FPM_SESSION_USE_STRICT_MODE:-1}/" "$FILE"
     done
 }
 
